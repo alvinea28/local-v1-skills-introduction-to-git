@@ -1,0 +1,15 @@
+#!/bin/sh
+# Exercise Monitor - local git hook
+# Notifies the exercise workflows that a checkout happened.
+# Args: $1 = previous HEAD, $2 = new HEAD, $3 = 1 when a branch checkout
+
+ROOT=$(git rev-parse --show-toplevel)
+SCRIPT="$ROOT/.exercise-monitor/send-event.ps1"
+
+if command -v pwsh >/dev/null 2>&1; then
+  PS=pwsh
+else
+  PS=powershell.exe
+fi
+
+"$PS" -NoProfile -ExecutionPolicy Bypass -File "$SCRIPT" -Event post-checkout -PreviousHead "$1" -NewHead "$2"

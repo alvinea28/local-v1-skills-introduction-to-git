@@ -1,0 +1,124 @@
+name: Step 0 # Start Exercise
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  STEP_1_FILE: ".github/steps/1-step.md"
+
+jobs:
+  start_exercise:
+    if: |
+      !github.event.repository.is_template
+    name: Start Exercise
+    uses: skills/exercise-toolkit/.github/workflows/start-exercise.yml@v0.7.0
+    with:
+      exercise-title: "Introduction to Git"
+      intro-message: "Use Git version control to work on a game using command line (CLI) and VS Code"
+
+  # The exercise toolkit's start-exercise workflow overwrites README.md with a
+  # welcome page and commits it. That breaks two things for this exercise:
+  #
+  #   1. Step 2 asks the learner to create README.md themselves. If the file
+  #      already exists the editor silently makes "README-1.md" instead and the
+  #      step can never pass.
+  #   2. It adds an automated commit, so `git log` in Step 3 starts out noisy.
+  #
+  # Roll the branch back to the single starting commit. This removes the
+  # generated README.md and leaves a clean, one-commit history for the learner.
+  reset_to_clean_history:
+    name: Restore clean history
+    runs-on: ubuntu-latest
+    needs: [start_exercise]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reset main to the initial commit
+        run: |
+          git pull origin main
+
+          root="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+          total="$(git rev-list --count HEAD)"
+
+          # Safety: only collapse the automated start-exercise commits. If the
+          # learner has already started committing, leave their work alone.
+          if [ "$total" -gt 3 ]; then
+            echo "History has $total commits - refusing to reset."
+            exit 0
+          fi
+
+          if [ "$(git rev-parse HEAD)" = "$root" ]; then
+            echo "Already at the initial commit - nothing to do."
+            exit 0
+          fi
+
+          echo "Resetting main from $total commits back to $root"
+          git reset --hard "$root"
+          git push --force origin main
+
+  post_next_step_content:
+    name: Post next step content
+    runs-on: ubuntu-latest
+    needs: [start_exercise, reset_to_clean_history]
+    env:
+      ISSUE_NUMBER: ${{ needs.start_exercise.outputs.issue-number }}
+      ISSUE_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Reset all step workflows
+        run: |
+          # A freshly copied/cloned repository has every step workflow enabled,
+          # which lets later steps trigger out of order. Disable them all so the
+          # exercise always begins at Step 1.
+          for step in 1 2 3 4 5 6; do
+            gh workflow disable "Step $step" || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get response templates
+        uses: actions/checkout@v4
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.7.3
+
+      - name: Create comment - add step content
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.STEP_1_FILE }}
+          vars: |
+            login: ${{ github.actor }}
+            full_repo_name: ${{ github.repository }}
+
+      - name: Create comment - watching for progress
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: exercise-toolkit/markdown-templates/step-feedback/watching-for-progress.md
+
+      - name: Enable next step workflow
+        run: |
+          gh workflow enable "Step 1"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}

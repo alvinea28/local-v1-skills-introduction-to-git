@@ -15,7 +15,7 @@ Mona has no way to watch your computer. Every step workflow in `.github/workflow
 | 5 | `post-merge` | `.githooks/post-merge` |
 | 6 | `issue_comment` | automatic, after Step 5 |
 
-All of them call `.exercise-monitor/send-event.ps1`, which posts the event through the GitHub CLI.
+All of them call `.exercise-monitor/send-event.ps1`, which posts the event through the GitHub CLI to progress the next activity.
 
 The watcher also reports repository-level config changes (for example when setup sets
 `core.hooksPath`). Step 1's workflow ignores those, so no result is posted until you actually

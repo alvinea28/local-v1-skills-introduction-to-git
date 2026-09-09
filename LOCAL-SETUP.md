@@ -1,6 +1,6 @@
 # Local setup
 
-This is a **local-first** copy of the GitHub Skills *Introduction to Git* exercise. The original relies on a GitHub Codespace that installs a background monitor; this version runs that monitor on your own machine instead.
+This is a **local-first** copy of the GitHub Skills introduction *Introduction to Git* exercise. The original relies on a GitHub Codespace that installs a background monitor; this version runs that monitor on your own machine instead.
 
 ## How Mona sees your work
 

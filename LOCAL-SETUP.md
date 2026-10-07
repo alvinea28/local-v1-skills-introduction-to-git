@@ -4,7 +4,7 @@ This is a **local-first** copy of the GitHub introduction *Introduction to Git* 
 
 ## How Mona sees your work
 
-Mona has no way to watch your computer. Every step workflow in `.github/workflows/` listens for a [`repository_dispatch`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#repository_dispatch) event:
+Mona has no way to watch your computer. Every step in the workflow in `.github/workflows/` listens for a [`repository_dispatch`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#repository_dispatch) event:
 
 | Step | Event type | Fired by |
 | --- | --- | --- |

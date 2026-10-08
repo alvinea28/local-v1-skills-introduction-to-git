@@ -17,7 +17,7 @@ Mona has no way to watch your computer. Every step in the workflow in `.github/w
 
 All of them call `.exercise-monitor/send-event.ps1`, which posts the event through the GitHub CLI to progress the next activity.
 
-The watcher also reports repository-level config changes (for example when setup sets
+The watcher also reports repository-level config changes (for example when setup set is
 `core.hooksPath`). Step 1's workflow ignores those, so no result is posted until you actually
 change your **global** identity.
 

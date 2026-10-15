@@ -2,7 +2,7 @@
 
 This is a **local-first** copy of the GitHub introduction *Introduction to Git* exercise. The original relies on a GitHub Codespace that installs a background monitor; this version runs that monitor on your own machine instead.
 
-## How Mona sees your work
+## How Mona sees your works
 
 Mona has no way to watch your computer. Every step in the workflow in `.github/workflows/` listens for a [`repository_dispatch`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#repository_dispatch) event:
 

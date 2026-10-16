@@ -1,4 +1,4 @@
-# Stops the background progress watcher started by .\start-activity.ps1
+# Stops the background progress watchers started by .\start-activity.ps1
 
 $ErrorActionPreference = 'Stop'
 

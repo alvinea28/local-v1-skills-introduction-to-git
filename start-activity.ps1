@@ -5,7 +5,7 @@
 # It is also run automatically the first time you open this folder in
 # Visual Studio Code (see .vscode/tasks.json).
 #
-# What it does:
+# What it:
 #   1. Verifies Git and the GitHub CLI are ready.
 #   2. Delivers the sample game into ./src as *untracked* files, so Step 2's
 #      "git add" / "Initial commit" behaves like a brand new project.
